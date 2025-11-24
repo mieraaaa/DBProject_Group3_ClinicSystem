@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <title>
+            Page Patients
+        </title>
+    </head>
+    <body class="bg"> 
+        <header>
+            <div style="padding: 20px; display: flex; justify-content: space-between;">
+                <h2 style="color: white;">Klinik Kelompok 3</h2>
+                <a href="{{ url_for('home') }}" style="color: white; text-decoration: none;">Logout</a>
+            </div>
+        </header>
+
+        <main>         
+            <div class="table-container">
+                <h1 style="color: white; text-align: center;">Halo, Patient  {{ patient['firstName'] }}</h1>
+                <div style="padding: 20px; background-color: rgba(255, 255, 255, 0.1); margin: 20px auto; width: 80%; border-radius: 10px; ">
+                    <h3 style="color: white; margin-top: 0;">Book a new appointment</h3>
+
+                    <form action="{{ url_for('book_appointment') }}" method="post" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                        <input type="date" name="date" required style="padding: 5px;">
+                        <input type="time" name="time" required style="padding: 5px;">
+                        <input type="text" value="{{ patient['firstName'] }} {{ patient['lastName'] }}" readonly 
+                            style="background-color: #ddd; color: #555; cursor: not-allowed;">
+                        <input type="hidden" name="patientID" value="{{ patient['patientID'] }}">
+
+                        <select name="doctorID" required style="padding: 5px;">
+                            <option value="">-- Choose a doctor --</option>
+                            {% for d in doctor %}
+                                <option value="{{ d['doctorID'] }}">
+                                    Dr. {{ d['firstName'] }} ({{ d['specialization'] }})
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="roomID" required style="padding: 5px;">
+                            <option value="">-- Choose a room --</option>
+                            {% for r in room %}
+                                <option value="{{ r['roomID'] }}">{{ r['roomName'] }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <button type="submit">Book Now</button>
+                    </form>
+                </div>
+
+                <table class="center">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                                <th>Time</th>
+                                <th>Doctor</th>
+                                <th>Room</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for appt in appointments %}
+        
+                        {% if request.args.get('edit_id')|int == appt['appointmentID'] %}
+                        <tr style="background-color: #435d89;">
+                            <form action="{{ url_for('patient_update_appointment', id=appt['appointmentID']) }}" method="post">
+                                <input type="hidden" name="patientID" value="{{ patient['patientID'] }}">
+                
+                                <td><input type="date" name="date" value="{{ appt['date'] }}" required></td>
+                                <td><input type="time" name="time" value="{{ appt['time'] }}" required></td>
+                
+                                <td>
+                                    <select name="doctorID" required>
+                                        {% for d in doctor %}
+                                            <option value="{{ d['doctorID'] }}" 
+                                                {% if appt['doctorName'] and d['firstName'] in appt['doctorName'] %}selected{% endif %}>
+                                                Dr. {{ d['firstName'] }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+
+                                <td>
+                                    <select name="roomID" required>
+                                        {% for r in room %}
+                                            <option value="{{ r['roomID'] }}" {% if r['roomName'] == appt['roomName'] %}selected{% endif %}>
+                                                {{ r['roomName'] }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+
+                                <td>{{ appt['status'] }}</td>
+
+                                <td>
+                                    <button type="submit">Simpan</button>
+                                    <a href="{{ url_for('patients', id=patient['patientID']) }}">Batal</a>
+                                </td>
+                            </form>
+                        </tr>
+
+                        {% else %}
+                        <tr>
+                            <td>{{ appt['date'] }}</td>
+                            <td>{{ appt['time'] }}</td>
+                            <td>{{ appt['doctorName'] }}</td>
+                            <td>{{ appt['roomName'] }}</td>
+                            <td>{{ appt['status'] }}</td>
+                            <td>
+                                <a href="{{ url_for('patients', id=patient['patientID'], edit_id=appt['appointmentID']) }}">
+                                    <button>Edit</button>
+                                </a>
+
+                                <form action="{{ url_for('patient_delete_appointment', id=appt['appointmentID']) }}" method="post" style="display: inline">
+                                    <button type="submit" onclick="return confirm('Batalkan Janji?')">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </main>
+    </body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <title>
+            Login Page - Admin
+        </title>
+    </head>
+    <body class="bg-login">
+        <div class="login-left"></div>
+        <div class="login-right">
+            <div style="max-width: 400px; width: 100%;">
+                <h2 style="width: 600px; font-size: 50px; color: black; margin-bottom: 10px; font-weight: 500; letter-spacing: -3px;">Admin Login Page</h2>
+                <p style="text-align: left; color: #888; margin-bottom: 40px;">Please enter your details.</p>
+
+                {% if error %}
+                    <script>
+                        alert("{{ error }}");
+                    </script>
+                {% endif %}
+                <form action="{{ url_for('loginAdmin') }}" method="POST">
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <label style="display:block; font-weight:600; margin-bottom:8px;">Username</label>
+                        <input type="text" placeholder="Enter your username" name="username" required 
+                            style="width: 100%; padding: 15px; border: 1px solid #f5f7fb; border-radius: 10px; background: #EDEDED;">
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 30px;">
+                        <label style="display:block; font-weight:600; margin-bottom:8px;">Password</label>
+                        <input type="password" placeholder="Enter your password" name="password" required 
+                           style="width: 100%; padding: 15px; border: 1px solid #eee; border-radius: 10px; background: #EDEDED;">
+                    </div>
+
+                    <button type="submit" class="btn-anim" 
+                    style="font-size: 18px;  border-radius: 10px; width: 432px; text-align: center; border: none; cursor: pointer; padding: 15px;">
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
